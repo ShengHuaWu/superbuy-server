@@ -1,7 +1,7 @@
 package org.shenghuawu.superbuy;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.shenghuawu.superbuy.items.Item;
@@ -33,16 +33,32 @@ class SuperbuyApplicationTests {
 
 	@Test
 	void getItems() throws Exception {
-		String uri = "/items";
-		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-				.accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+		MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/items").accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
-		int status = mvcResult.getResponse().getStatus();
+		int status = result.getResponse().getStatus();
 		assertEquals(200, status);
 
-		ObjectReader objectReader = new ObjectMapper().readerFor(Map.class); // Use reader to suppress `Unchecked assignment` warning
-		String contentString = mvcResult.getResponse().getContentAsString();
-		Map<String, List<Item>> responseBody = objectReader.readValue(contentString);
+		ObjectMapper mapper = new ObjectMapper();
+		String contentString = result.getResponse().getContentAsString();
+		Map<String, List<Item>> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, List<Item>>>() {});
 		assertEquals(responseBody.get("items").size(), 1);
+	}
+
+	@Test
+	void getItemById() throws Exception {
+		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+
+		MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/items/1234-9876-abcd-7788").accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+		int status = result.getResponse().getStatus();
+		assertEquals(200, status);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String contentString = result.getResponse().getContentAsString();
+		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
+
+		assertEquals(responseBody.get("item").getId(), fakeItem.getId());
+		assertEquals(responseBody.get("item").getName(), fakeItem.getName());
+		// TODO: Implement isEqual in Item?
 	}
 }

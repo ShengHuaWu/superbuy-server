@@ -3,6 +3,7 @@ package org.shenghuawu.superbuy.items;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -20,6 +21,14 @@ public class ItemsController {
         Item item = new Item("1234-9876-abcd-7788", "Fake Item");
         List<Item> items = Arrays.asList(item);
         ItemsResponseBody body = new ItemsResponseBody(items);
+
+        return ResponseEntity.ok(body);
+    }
+
+    @GetMapping("/items/{itemId}")
+    public ResponseEntity<ItemResponseBody> getItemBy(@PathVariable("itemId") String id) {
+        Item item = new Item("1234-9876-abcd-7788", "Fake Item");
+        ItemResponseBody body = new ItemResponseBody(item);
 
         return ResponseEntity.ok(body);
     }
