@@ -33,6 +33,8 @@ class SuperbuyApplicationTests {
 
 	@Test
 	void getItems() throws Exception {
+		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+
 		MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/items").accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
 		int status = result.getResponse().getStatus();
@@ -40,8 +42,11 @@ class SuperbuyApplicationTests {
 
 		ObjectMapper mapper = new ObjectMapper();
 		String contentString = result.getResponse().getContentAsString();
+		// Use `TypeReference` to match the exact type when parsing JSON
 		Map<String, List<Item>> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, List<Item>>>() {});
+
 		assertEquals(responseBody.get("items").size(), 1);
+		assertEquals(responseBody.get("items").get(0), fakeItem);
 	}
 
 	@Test
@@ -57,8 +62,6 @@ class SuperbuyApplicationTests {
 		String contentString = result.getResponse().getContentAsString();
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
-		assertEquals(responseBody.get("item").getId(), fakeItem.getId());
-		assertEquals(responseBody.get("item").getName(), fakeItem.getName());
-		// TODO: Implement isEqual in Item?
+		assertEquals(responseBody.get("item"), fakeItem);
 	}
 }
