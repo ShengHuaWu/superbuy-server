@@ -8,7 +8,11 @@ public class Item {
     private String id;
     private String name;
 
-    public Item(@JsonProperty("id") String id, @JsonProperty("name") String name) {
+    // Use `@JsonProperty` to do proper JSON parsing
+    public Item(
+            @JsonProperty("id") String id,
+            @JsonProperty("name") String name
+    ) {
         this.id = id;
         this.name = name;
     }

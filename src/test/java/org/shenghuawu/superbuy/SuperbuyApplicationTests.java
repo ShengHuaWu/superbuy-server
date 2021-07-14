@@ -32,6 +32,29 @@ class SuperbuyApplicationTests {
 	}
 
 	@Test
+	void createItem() throws Exception {
+		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+
+		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.post("/items")
+						.contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(body)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
+
+		int status = result.getResponse().getStatus();
+		assertEquals(201, status);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String contentString = result.getResponse().getContentAsString();
+		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
+
+		assertEquals(responseBody.get("item"), fakeItem);
+	}
+
+	@Test
 	void getItems() throws Exception {
 		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
 
@@ -75,26 +98,27 @@ class SuperbuyApplicationTests {
 	}
 
 	@Test
-	void createItem() throws Exception {
-		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+	void updateItemById() throws Exception {
+		Item expectedItem = new Item("1234-9876-abcd-7788", "Fake Item");
 
-		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
+		String urlString = String.format("/items/%s", expectedItem.getId());
+		String body = String.format("{\"name\": \"%s\"}", expectedItem.getName());
 		MvcResult result = mvc.perform(
 				MockMvcRequestBuilders
-						.post("/items")
+						.put(urlString)
 						.contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(body)
 						.accept(MediaType.APPLICATION_JSON_VALUE)
 		).andReturn();
 
 		int status = result.getResponse().getStatus();
-		assertEquals(201, status);
+		assertEquals(200, status);
 
 		ObjectMapper mapper = new ObjectMapper();
 		String contentString = result.getResponse().getContentAsString();
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
-		assertEquals(responseBody.get("item"), fakeItem);
+		assertEquals(responseBody.get("item"), expectedItem);
 	}
 
 	@Test

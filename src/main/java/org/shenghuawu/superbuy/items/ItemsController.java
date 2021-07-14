@@ -15,6 +15,14 @@ public class ItemsController {
     @Autowired
     public ItemsController() {}
 
+    @PostMapping("/items")
+    public ResponseEntity<ItemResponseBody> createItem(@RequestBody Item item) {
+        Item newItem = new Item("1234-9876-abcd-7788", item.getName());
+        ItemResponseBody body = new ItemResponseBody(newItem);
+
+        return new ResponseEntity(body, HttpStatus.CREATED);
+    }
+
     @GetMapping("/items")
     // Use `ResponseEntity` to handle the response body, headers, and status code.
     public ResponseEntity<ItemsResponseBody> getItems() {
@@ -33,12 +41,12 @@ public class ItemsController {
         return ResponseEntity.ok(body);
     }
 
-    @PostMapping("/items")
-    public ResponseEntity<ItemResponseBody> createItem(@RequestBody Item item) {
-        Item newItem = new Item("1234-9876-abcd-7788", item.getName());
+    @PutMapping("/items/{itemId}")
+    public  ResponseEntity<ItemResponseBody> updateItemBy(@PathVariable("itemId") String id, @RequestBody Item item) {
+        Item newItem = new Item(id, item.getName());
         ItemResponseBody body = new ItemResponseBody(newItem);
 
-        return new ResponseEntity(body, HttpStatus.CREATED);
+        return ResponseEntity.ok(body);
     }
 
     @DeleteMapping("/items/{itemId}")
