@@ -40,4 +40,12 @@ public class ItemsController {
 
         return new ResponseEntity(body, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<ItemResponseBody> deleteItemBy(@PathVariable("itemId") String id) {
+        Item item = new Item("1234-9876-abcd-7788", "Fake Item");
+        ItemResponseBody body = new ItemResponseBody(item);
+
+        return new ResponseEntity(body, HttpStatus.NO_CONTENT);
+    }
 }

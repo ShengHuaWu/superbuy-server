@@ -35,7 +35,11 @@ class SuperbuyApplicationTests {
 	void getItems() throws Exception {
 		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
 
-		MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/items").accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.get("/items")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
 
 		int status = result.getResponse().getStatus();
 		assertEquals(200, status);
@@ -53,7 +57,12 @@ class SuperbuyApplicationTests {
 	void getItemById() throws Exception {
 		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
 
-		MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/items/1234-9876-abcd-7788").accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+		String urlString = String.format("/items/%s", fakeItem.getId());
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.get(urlString)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
 
 		int status = result.getResponse().getStatus();
 		assertEquals(200, status);
@@ -69,16 +78,38 @@ class SuperbuyApplicationTests {
 	void createItem() throws Exception {
 		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
 
-		String content = String.format("{\"name\": \"%s\"}", fakeItem.getName());
+		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
 		MvcResult result = mvc.perform(
-				MockMvcRequestBuilders.post("/items")
-				.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(content)
-				.accept(MediaType.APPLICATION_JSON_VALUE)
+				MockMvcRequestBuilders
+						.post("/items")
+						.contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(body)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
 		).andReturn();
 
 		int status = result.getResponse().getStatus();
 		assertEquals(201, status);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String contentString = result.getResponse().getContentAsString();
+		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
+
+		assertEquals(responseBody.get("item"), fakeItem);
+	}
+
+	@Test
+	void deleteItemById() throws Exception {
+		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+
+		String urlString = String.format("/items/%s", fakeItem.getId());
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.delete(urlString)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
+
+		int status = result.getResponse().getStatus();
+		assertEquals(204, status);
 
 		ObjectMapper mapper = new ObjectMapper();
 		String contentString = result.getResponse().getContentAsString();
