@@ -1,23 +1,29 @@
 package org.shenghuawu.superbuy.items;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 // Mark the class as `public` is necessary because it will be used outside of its package.
 public class ItemsController {
+    private final ItemsService itemsService;
+
     @Autowired
-    public ItemsController() {}
+    public ItemsController(ItemsService itemsService) {
+        this.itemsService = itemsService;
+    }
 
     @PostMapping("/items")
     public ResponseEntity<ItemResponseBody> createItem(@RequestBody Item item) {
-        Item newItem = new Item("1234-9876-abcd-7788", item.getName());
+        // TODO: Move the creation into `ItemsService`
+        String id = UUID.randomUUID().toString();
+        Item newItem = new Item(id, item.getName());
+        itemsService.createItem(newItem);
         ItemResponseBody body = new ItemResponseBody(newItem);
 
         return new ResponseEntity(body, HttpStatus.CREATED);
@@ -26,8 +32,7 @@ public class ItemsController {
     @GetMapping("/items")
     // Use `ResponseEntity` to handle the response body, headers, and status code.
     public ResponseEntity<ItemsResponseBody> getItems() {
-        Item item = new Item("1234-9876-abcd-7788", "Fake Item");
-        List<Item> items = Arrays.asList(item);
+        List<Item> items = itemsService.getAllItems();
         ItemsResponseBody body = new ItemsResponseBody(items);
 
         return ResponseEntity.ok(body);
@@ -35,7 +40,7 @@ public class ItemsController {
 
     @GetMapping("/items/{itemId}")
     public ResponseEntity<ItemResponseBody> getItemBy(@PathVariable("itemId") String id) {
-        Item item = new Item(id, "Fake Item");
+        Item item = itemsService.getItemById(id);
         ItemResponseBody body = new ItemResponseBody(item);
 
         return ResponseEntity.ok(body);
@@ -43,7 +48,7 @@ public class ItemsController {
 
     @PutMapping("/items/{itemId}")
     public  ResponseEntity<ItemResponseBody> updateItemBy(@PathVariable("itemId") String id, @RequestBody Item item) {
-        Item newItem = new Item(id, item.getName());
+        Item newItem = itemsService.updateItemById(id, item);
         ItemResponseBody body = new ItemResponseBody(newItem);
 
         return ResponseEntity.ok(body);
@@ -51,7 +56,7 @@ public class ItemsController {
 
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<ItemResponseBody> deleteItemBy(@PathVariable("itemId") String id) {
-        Item item = new Item("1234-9876-abcd-7788", "Fake Item");
+        Item item = itemsService.deleteItemById(id);
         ItemResponseBody body = new ItemResponseBody(item);
 
         return new ResponseEntity(body, HttpStatus.NO_CONTENT);
