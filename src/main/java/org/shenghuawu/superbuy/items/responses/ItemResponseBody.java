@@ -1,4 +1,6 @@
-package org.shenghuawu.superbuy.items;
+package org.shenghuawu.superbuy.items.responses;
+
+import org.shenghuawu.superbuy.items.Item;
 
 public class ItemResponseBody {
     private Item item;

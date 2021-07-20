@@ -1,11 +1,10 @@
 package org.shenghuawu.superbuy.items;
 
+import org.shenghuawu.superbuy.items.requests.CreateItemRequest;
+import org.shenghuawu.superbuy.items.requests.UpdateItemRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ItemsService {
@@ -25,18 +24,21 @@ public class ItemsService {
         return item;
     }
 
-    public Item createItem(Item newItem) {
-        // TODO: Need a `CreateItemRequestBody` for creation
+    public Item createItem(CreateItemRequest request) {
+        String id = UUID.randomUUID().toString();
+        Item newItem = new Item(id, request);
         items.put(newItem.getId(), newItem);
 
         return newItem;
     }
 
-    // TODO: Need a `UpdateItemRequestBody` to support partial update
-    public Item updateItemById(String id, Item newItem) {
-        items.put(id, newItem);
+    public Item updateItemById(String id, UpdateItemRequest request) {
+        Item existingItem = items.get(id);
+        // TODO: Handle item does not exist
+        existingItem.update(request);
+        items.put(id, existingItem);
 
-        return newItem;
+        return existingItem;
     }
 
     public Item deleteItemById(String id) {

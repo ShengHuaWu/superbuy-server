@@ -1,12 +1,15 @@
 package org.shenghuawu.superbuy.items;
 
+import org.shenghuawu.superbuy.items.requests.CreateItemRequest;
+import org.shenghuawu.superbuy.items.requests.UpdateItemRequest;
+import org.shenghuawu.superbuy.items.responses.ItemResponseBody;
+import org.shenghuawu.superbuy.items.responses.ItemsResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 // Mark the class as `public` is necessary because it will be used outside of its package.
@@ -19,11 +22,8 @@ public class ItemsController {
     }
 
     @PostMapping("/items")
-    public ResponseEntity<ItemResponseBody> createItem(@RequestBody Item item) {
-        // TODO: Move the creation into `ItemsService`
-        String id = UUID.randomUUID().toString();
-        Item newItem = new Item(id, item.getName());
-        itemsService.createItem(newItem);
+    public ResponseEntity<ItemResponseBody> createItem(@RequestBody CreateItemRequest request) {
+        Item newItem = itemsService.createItem(request);
         ItemResponseBody body = new ItemResponseBody(newItem);
 
         return new ResponseEntity(body, HttpStatus.CREATED);
@@ -47,8 +47,8 @@ public class ItemsController {
     }
 
     @PutMapping("/items/{itemId}")
-    public  ResponseEntity<ItemResponseBody> updateItemBy(@PathVariable("itemId") String id, @RequestBody Item item) {
-        Item newItem = itemsService.updateItemById(id, item);
+    public  ResponseEntity<ItemResponseBody> updateItemBy(@PathVariable("itemId") String id, @RequestBody UpdateItemRequest request) {
+        Item newItem = itemsService.updateItemById(id, request);
         ItemResponseBody body = new ItemResponseBody(newItem);
 
         return ResponseEntity.ok(body);

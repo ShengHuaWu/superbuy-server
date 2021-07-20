@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.shenghuawu.superbuy.items.Item;
 import org.shenghuawu.superbuy.items.ItemsController;
 import org.shenghuawu.superbuy.items.ItemsService;
+import org.shenghuawu.superbuy.items.requests.CreateItemRequest;
+import org.shenghuawu.superbuy.items.requests.UpdateItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,11 +30,14 @@ class SuperbuyApplicationTests {
 	@MockBean
 	private ItemsService mockItemsService;
 
-	/*
+	private Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+
 	@Test
 	void createItem() throws Exception {
-		String itemName = "Fake Item";
-		String body = String.format("{\"name\": \"%s\"}", itemName);
+		CreateItemRequest request = new CreateItemRequest(fakeItem.getName());
+		Mockito.when(mockItemsService.createItem(request)).thenReturn(fakeItem);
+
+		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
 		MvcResult result = mvc.perform(
 				MockMvcRequestBuilders
 						.post("/items")
@@ -48,12 +53,11 @@ class SuperbuyApplicationTests {
 		String contentString = result.getResponse().getContentAsString();
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
-		assertEquals(responseBody.get("item").getName(), itemName);
-	}*/
+		assertEquals(responseBody.get("item"), fakeItem);
+	}
 
 	@Test
 	void getItems() throws Exception {
-		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
 		Mockito.when(mockItemsService.getAllItems()).thenReturn(Arrays.asList(fakeItem));
 
 		MvcResult result = mvc.perform(
@@ -74,10 +78,9 @@ class SuperbuyApplicationTests {
 		assertEquals(responseBody.get("items").get(0), fakeItem);
 	}
 
-	/*
 	@Test
 	void getItemById() throws Exception {
-		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+		Mockito.when(mockItemsService.getItemById(fakeItem.getId())).thenReturn(fakeItem);
 
 		String urlString = String.format("/items/%s", fakeItem.getId());
 		MvcResult result = mvc.perform(
@@ -98,10 +101,11 @@ class SuperbuyApplicationTests {
 
 	@Test
 	void updateItemById() throws Exception {
-		Item expectedItem = new Item("1234-9876-abcd-7788", "Fake Item");
+		UpdateItemRequest request = new UpdateItemRequest(fakeItem.getName());
+		Mockito.when(mockItemsService.updateItemById(fakeItem.getId(), request)).thenReturn(fakeItem);
 
-		String urlString = String.format("/items/%s", expectedItem.getId());
-		String body = String.format("{\"name\": \"%s\"}", expectedItem.getName());
+		String urlString = String.format("/items/%s", fakeItem.getId());
+		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
 		MvcResult result = mvc.perform(
 				MockMvcRequestBuilders
 						.put(urlString)
@@ -117,12 +121,12 @@ class SuperbuyApplicationTests {
 		String contentString = result.getResponse().getContentAsString();
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
-		assertEquals(responseBody.get("item"), expectedItem);
+		assertEquals(responseBody.get("item"), fakeItem);
 	}
 
 	@Test
 	void deleteItemById() throws Exception {
-		Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+		Mockito.when(mockItemsService.deleteItemById(fakeItem.getId())).thenReturn(fakeItem);
 
 		String urlString = String.format("/items/%s", fakeItem.getId());
 		MvcResult result = mvc.perform(
@@ -139,5 +143,5 @@ class SuperbuyApplicationTests {
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
 		assertEquals(responseBody.get("item"), fakeItem);
-	}*/
+	}
 }
