@@ -22,7 +22,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@WebMvcTest(ItemsController.class) // TODO: Figure out `WebMvcTest`
+@WebMvcTest(ItemsController.class) // Tell Spring Boot to instantiate only `ItemsController`
 class SuperbuyApplicationTests {
 	@Autowired
 	private MockMvc mvc;
