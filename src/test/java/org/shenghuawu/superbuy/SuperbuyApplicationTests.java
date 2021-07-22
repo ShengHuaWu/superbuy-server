@@ -21,7 +21,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+// TODO: Rename this file to `ItemsControllerTests` and move it into `items` folder
 @WebMvcTest(ItemsController.class) // Tell Spring Boot to instantiate only `ItemsController`
 class SuperbuyApplicationTests {
 	@Autowired
