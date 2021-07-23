@@ -1,4 +1,4 @@
-package org.shenghuawu.superbuy;
+package org.shenghuawu.superbuy.items;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,9 +21,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// TODO: Rename this file to `ItemsControllerTests` and move it into `items` folder
 @WebMvcTest(ItemsController.class) // Tell Spring Boot to instantiate only `ItemsController`
-class SuperbuyApplicationTests {
+class ItemsControllerTests {
 	@Autowired
 	private MockMvc mvc;
 
