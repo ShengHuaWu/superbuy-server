@@ -10,17 +10,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ItemsServiceTests {
     private ItemsService itemsService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() {
         itemsService = new ItemsService();
     }
 
     @Test
-    public void operations() throws Exception {
+    void operations() throws Exception {
         // Create
         String name = "Blob";
         CreateItemRequest createItemRequest = new CreateItemRequest(name);
@@ -50,5 +51,26 @@ class ItemsServiceTests {
         items = itemsService.getAllItems();
         assertEquals(updatedItem, deletedItem);
         assertTrue(items.isEmpty());
+    }
+
+    @Test
+    void getItemByItemNotFound() throws Exception {
+        try {
+            Item item = itemsService.getItemById("not-found");
+            fail("Item not found should be caught");
+        } catch (RuntimeException exception) {
+            assertEquals("Item not found", exception.getMessage());
+        }
+    }
+
+    @Test
+    void updateItemByItemNotFound() throws Exception {
+        try {
+            UpdateItemRequest request = new UpdateItemRequest("new name");
+            Item item = itemsService.updateItemById("not-found", request);
+            fail("Item not found should be caught");
+        } catch (RuntimeException exception) {
+            assertEquals("Item not found", exception.getMessage());
+        }
     }
 }

@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.shenghuawu.superbuy.items.Item;
-import org.shenghuawu.superbuy.items.ItemsController;
-import org.shenghuawu.superbuy.items.ItemsService;
 import org.shenghuawu.superbuy.items.requests.CreateItemRequest;
 import org.shenghuawu.superbuy.items.requests.UpdateItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,7 @@ class ItemsControllerTests {
 	private ItemsService mockItemsService;
 
 	private Item fakeItem = new Item("1234-9876-abcd-7788", "Fake Item");
+	private RuntimeException notFoundException = new RuntimeException("Item not found");
 
 	@Test
 	void createItem() throws Exception {
@@ -99,6 +97,21 @@ class ItemsControllerTests {
 	}
 
 	@Test
+	void getItemByIdNotFound() throws Exception {
+		Mockito.when(mockItemsService.getItemById(fakeItem.getId())).thenThrow(notFoundException);
+
+		String urlString = String.format("/items/%s", fakeItem.getId());
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.get(urlString)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
+
+		int status = result.getResponse().getStatus();
+		assertEquals(404, status);
+	}
+
+	@Test
 	void updateItemById() throws Exception {
 		UpdateItemRequest request = new UpdateItemRequest(fakeItem.getName());
 		Mockito.when(mockItemsService.updateItemById(fakeItem.getId(), request)).thenReturn(fakeItem);
@@ -121,6 +134,25 @@ class ItemsControllerTests {
 		Map<String, Item> responseBody = mapper.readValue(contentString, new TypeReference<Map<String, Item>>() {});
 
 		assertEquals(responseBody.get("item"), fakeItem);
+	}
+
+	@Test
+	void updateItemByIdNotFound() throws Exception {
+		UpdateItemRequest request = new UpdateItemRequest(fakeItem.getName());
+		Mockito.when(mockItemsService.updateItemById(fakeItem.getId(), request)).thenThrow(notFoundException);
+
+		String urlString = String.format("/items/%s", fakeItem.getId());
+		String body = String.format("{\"name\": \"%s\"}", fakeItem.getName());
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders
+						.put(urlString)
+						.contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(body)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+		).andReturn();
+
+		int status = result.getResponse().getStatus();
+		assertEquals(404, status);
 	}
 
 	@Test

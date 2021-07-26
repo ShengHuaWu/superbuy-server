@@ -34,7 +34,11 @@ public class ItemsService {
 
     public Item updateItemById(String id, UpdateItemRequest request) {
         Item existingItem = items.get(id);
-        // TODO: Handle item does not exist
+
+        if (existingItem == null) {
+            throw new RuntimeException("Item not found");
+        }
+
         existingItem.update(request);
         items.put(id, existingItem);
 
