@@ -5,6 +5,7 @@ import org.shenghuawu.superbuy.items.Item;
 import java.util.List;
 
 public class ItemsResponseBody {
+    // TODO: Avoid return the entire item, e.g. excluding `isDeleted`
     private List<Item> items;
 
     public ItemsResponseBody(List<Item> items) {

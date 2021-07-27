@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// TODO: Authentication
+// https://spring.io/guides/gs/securing-web/
+
 @RestController
 // Mark the class as `public` is necessary because it will be used outside of its package.
 public class ItemsController {

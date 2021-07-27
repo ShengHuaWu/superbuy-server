@@ -5,13 +5,14 @@ import org.shenghuawu.superbuy.items.requests.UpdateItemRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemsService {
     private final Map<String, Item> items = new HashMap<>();
 
     public List<Item> getAllItems() {
-        return new ArrayList(items.values());
+        return items.values().stream().filter(item -> !item.getIsDeleted()).collect(Collectors.toList());
     }
 
     public Item getItemById(String id) {
@@ -46,6 +47,16 @@ public class ItemsService {
     }
 
     public Item deleteItemById(String id) {
-        return items.remove(id);
+        Item existingItem = items.get(id);
+
+        // TODO: Should throw an item-not-found exception?
+        if (existingItem == null) {
+            return null;
+        }
+
+        existingItem.markAsDeleted();
+        items.put(id, existingItem);
+
+        return existingItem;
     }
 }

@@ -9,6 +9,7 @@ import java.util.Objects;
 public class Item {
     private String id;
     private String name;
+    private Boolean isDeleted = false;
 
     // Use `@JsonProperty` to do proper JSON parsing
     public Item(
@@ -32,6 +33,10 @@ public class Item {
         return this.name;
     }
 
+    public Boolean getIsDeleted() {
+        return this.isDeleted;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,15 +45,20 @@ public class Item {
         Item item = (Item) o;
 
         return Objects.equals(id, item.id) &&
-                Objects.equals(name, item.name);
+                Objects.equals(name, item.name) &&
+                Objects.equals(isDeleted, item.isDeleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, isDeleted);
     }
 
     public void update(UpdateItemRequest request) {
         name = request.getName();
+    }
+
+    public void markAsDeleted() {
+        isDeleted = true;
     }
 }
